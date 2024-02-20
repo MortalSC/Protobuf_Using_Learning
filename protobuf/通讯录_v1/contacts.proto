@@ -1,0 +1,12 @@
+// 首行：语法指定行
+syntax = "proto3";
+package contacts;
+
+// 定义联系人 message
+// 属性定义方式：
+// 类型 属性名 = 字段编号;
+// 字段编号与编译有关，是高效的实现底层之一
+message PeopleInfo{
+    string name = 1;
+    int32 age = 2;
+}
