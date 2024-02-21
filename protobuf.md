@@ -794,4 +794,137 @@ message Contacts{
 
 
 
-### 消息类型的定义与使用
+#### Any 类型自动关联的常用方法
+
+~~~c++
+mutable_data() => 返回 Any*
+// 获取 Any 指针
+
+mutable_data()->PackFrom(被绑定类型) => 返回 bool
+// 将 Any 与被包装类型进行绑定
+
+message.has_data(); 
+// 用于判断 message 中 Any 声明的 data 属性是否被设定值！
+    
+message.data();
+// 可以用于提取 message 中 Any 声明的 data 的值
+
+message.data().Is<类型>(); => 返回 bool
+// 可以用于判断 message 中 Any 声明的 data 类型是否为指定类型
+
+info.data().UnpackTo(被包装类型对象); => 返回 bool
+// 用于获取 any 包含的实际被包装类型对象值【输出型参数】
+
+被包装类型对象.属性名().empty();
+// 用于判断指定属性是否被设定值！
+~~~
+
+
+
+
+
+
+
+### oneof 类型及其使用：通讯录v2.3【增加其他联系方式（多选一）】
+
+#### 类型使用说明！
+
+> **oneof 类型里可以设置多种字段属性！**
+>
+> - **但是它的实际取值，只能是其中之一！**
+> - **且如果同时设置，只认定字段属性中被设定值的最后一个**
+>
+> 转义成 cpp 后，属性就会被设置在枚举类型中。
+>
+> ---
+>
+> 举例说明：
+>
+> - 比如我们通讯录中可以保留其他联系方式
+> - 如：QQ，wechat
+> - 如果只能存储其中一种，就可以使用 oneof 包装！
+> - 如果QQ，wechat同时被赋值，认定最后被设定的一个，即 wechat！
+>
+> ---
+>
+> **注意：oneof 中的字段序号与 oneof 同级声明的其他类型在一个作用域中，即 oneof 中的类型就是常规字段，只不过通过 oneof 限定，只使用多个中的一个。**
+>
+> **注意：oneof 中不能使用 repeated 关键字**
+
+
+
+#### .proto 文件示例
+
+~~~c++
+syntax = "proto3";
+package contacts2;
+
+// 引入 Any 类型
+import "google/protobuf/any.proto";
+
+// 定义地址类型
+message Address{
+    string home_addr = 1;
+    string work_addr = 2;
+}
+
+
+// 联系人信息
+message PeopleInfo{
+    string name = 1;
+    int32 age = 2;
+    message Phone{
+        string number = 1;
+        enum PhoneType{
+            MT = 0;
+            TEL = 1;
+        }
+        PhoneType type = 2;
+    }
+    repeated Phone phone = 3;
+    google.protubuf.Any data =4;
+    oneof other_contact{
+        string qq = 5;
+        string wechat = 6;
+    }
+}
+
+// 通讯录
+message Contacts{
+    repeated PeopleInfo people = 1;   
+}
+~~~
+
+
+
+
+
+#### oneof 类型自动关联的常用方法
+
+~~~c++
+has_字段名();
+// 用于判断 oneof 中是否有/是否被赋值
+
+clear_字段名();
+// 用于清楚对应字段的值
+
+字段名();
+// 用于获取指定字段的值
+
+clear_other_contact();
+// 用于清理字段：非指定/赋值/最后赋值
+
+other_contact_case();
+// 获取当前 oneof 实际关联字段
+// 返回 0 标识什么也没设置
+// 若有返回字段序号
+~~~
+
+
+
+
+
+
+
+
+
