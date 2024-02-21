@@ -501,6 +501,12 @@ class PeopleInfo final :
   static const PeopleInfo& default_instance() {
     return *internal_default_instance();
   }
+  enum OtherContactCase {
+    kQq = 5,
+    kWechat = 6,
+    OTHER_CONTACT_NOT_SET = 0,
+  };
+
   static inline const PeopleInfo* internal_default_instance() {
     return reinterpret_cast<const PeopleInfo*>(
                &_PeopleInfo_default_instance_);
@@ -585,6 +591,8 @@ class PeopleInfo final :
     kNameFieldNumber = 1,
     kDataFieldNumber = 4,
     kAgeFieldNumber = 2,
+    kQqFieldNumber = 5,
+    kWechatFieldNumber = 6,
   };
   // repeated .contacts2.PeopleInfo.Phone phone = 3;
   int phone_size() const;
@@ -645,9 +653,52 @@ class PeopleInfo final :
   void _internal_set_age(int32_t value);
   public:
 
+  // string qq = 5;
+  bool has_qq() const;
+  private:
+  bool _internal_has_qq() const;
+  public:
+  void clear_qq();
+  const std::string& qq() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_qq(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_qq();
+  PROTOBUF_NODISCARD std::string* release_qq();
+  void set_allocated_qq(std::string* qq);
+  private:
+  const std::string& _internal_qq() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_qq(const std::string& value);
+  std::string* _internal_mutable_qq();
+  public:
+
+  // string wechat = 6;
+  bool has_wechat() const;
+  private:
+  bool _internal_has_wechat() const;
+  public:
+  void clear_wechat();
+  const std::string& wechat() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_wechat(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_wechat();
+  PROTOBUF_NODISCARD std::string* release_wechat();
+  void set_allocated_wechat(std::string* wechat);
+  private:
+  const std::string& _internal_wechat() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_wechat(const std::string& value);
+  std::string* _internal_mutable_wechat();
+  public:
+
+  void clear_other_contact();
+  OtherContactCase other_contact_case() const;
   // @@protoc_insertion_point(class_scope:contacts2.PeopleInfo)
  private:
   class _Internal;
+  void set_has_qq();
+  void set_has_wechat();
+
+  inline bool has_other_contact() const;
+  inline void clear_has_other_contact();
 
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
@@ -657,7 +708,15 @@ class PeopleInfo final :
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     ::PROTOBUF_NAMESPACE_ID::Any* data_;
     int32_t age_;
+    union OtherContactUnion {
+      constexpr OtherContactUnion() : _constinit_{} {}
+        ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized _constinit_;
+      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr qq_;
+      ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr wechat_;
+    } other_contact_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    uint32_t _oneof_case_[1];
+
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_contacts2_2eproto;
@@ -1203,6 +1262,169 @@ inline void PeopleInfo::set_allocated_data(::PROTOBUF_NAMESPACE_ID::Any* data) {
   // @@protoc_insertion_point(field_set_allocated:contacts2.PeopleInfo.data)
 }
 
+// string qq = 5;
+inline bool PeopleInfo::_internal_has_qq() const {
+  return other_contact_case() == kQq;
+}
+inline bool PeopleInfo::has_qq() const {
+  return _internal_has_qq();
+}
+inline void PeopleInfo::set_has_qq() {
+  _impl_._oneof_case_[0] = kQq;
+}
+inline void PeopleInfo::clear_qq() {
+  if (_internal_has_qq()) {
+    _impl_.other_contact_.qq_.Destroy();
+    clear_has_other_contact();
+  }
+}
+inline const std::string& PeopleInfo::qq() const {
+  // @@protoc_insertion_point(field_get:contacts2.PeopleInfo.qq)
+  return _internal_qq();
+}
+template <typename ArgT0, typename... ArgT>
+inline void PeopleInfo::set_qq(ArgT0&& arg0, ArgT... args) {
+  if (!_internal_has_qq()) {
+    clear_other_contact();
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitDefault();
+  }
+  _impl_.other_contact_.qq_.Set( static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:contacts2.PeopleInfo.qq)
+}
+inline std::string* PeopleInfo::mutable_qq() {
+  std::string* _s = _internal_mutable_qq();
+  // @@protoc_insertion_point(field_mutable:contacts2.PeopleInfo.qq)
+  return _s;
+}
+inline const std::string& PeopleInfo::_internal_qq() const {
+  if (_internal_has_qq()) {
+    return _impl_.other_contact_.qq_.Get();
+  }
+  return ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited();
+}
+inline void PeopleInfo::_internal_set_qq(const std::string& value) {
+  if (!_internal_has_qq()) {
+    clear_other_contact();
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitDefault();
+  }
+  _impl_.other_contact_.qq_.Set(value, GetArenaForAllocation());
+}
+inline std::string* PeopleInfo::_internal_mutable_qq() {
+  if (!_internal_has_qq()) {
+    clear_other_contact();
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitDefault();
+  }
+  return _impl_.other_contact_.qq_.Mutable(      GetArenaForAllocation());
+}
+inline std::string* PeopleInfo::release_qq() {
+  // @@protoc_insertion_point(field_release:contacts2.PeopleInfo.qq)
+  if (_internal_has_qq()) {
+    clear_has_other_contact();
+    return _impl_.other_contact_.qq_.Release();
+  } else {
+    return nullptr;
+  }
+}
+inline void PeopleInfo::set_allocated_qq(std::string* qq) {
+  if (has_other_contact()) {
+    clear_other_contact();
+  }
+  if (qq != nullptr) {
+    set_has_qq();
+    _impl_.other_contact_.qq_.InitAllocated(qq, GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts2.PeopleInfo.qq)
+}
+
+// string wechat = 6;
+inline bool PeopleInfo::_internal_has_wechat() const {
+  return other_contact_case() == kWechat;
+}
+inline bool PeopleInfo::has_wechat() const {
+  return _internal_has_wechat();
+}
+inline void PeopleInfo::set_has_wechat() {
+  _impl_._oneof_case_[0] = kWechat;
+}
+inline void PeopleInfo::clear_wechat() {
+  if (_internal_has_wechat()) {
+    _impl_.other_contact_.wechat_.Destroy();
+    clear_has_other_contact();
+  }
+}
+inline const std::string& PeopleInfo::wechat() const {
+  // @@protoc_insertion_point(field_get:contacts2.PeopleInfo.wechat)
+  return _internal_wechat();
+}
+template <typename ArgT0, typename... ArgT>
+inline void PeopleInfo::set_wechat(ArgT0&& arg0, ArgT... args) {
+  if (!_internal_has_wechat()) {
+    clear_other_contact();
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitDefault();
+  }
+  _impl_.other_contact_.wechat_.Set( static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:contacts2.PeopleInfo.wechat)
+}
+inline std::string* PeopleInfo::mutable_wechat() {
+  std::string* _s = _internal_mutable_wechat();
+  // @@protoc_insertion_point(field_mutable:contacts2.PeopleInfo.wechat)
+  return _s;
+}
+inline const std::string& PeopleInfo::_internal_wechat() const {
+  if (_internal_has_wechat()) {
+    return _impl_.other_contact_.wechat_.Get();
+  }
+  return ::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited();
+}
+inline void PeopleInfo::_internal_set_wechat(const std::string& value) {
+  if (!_internal_has_wechat()) {
+    clear_other_contact();
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitDefault();
+  }
+  _impl_.other_contact_.wechat_.Set(value, GetArenaForAllocation());
+}
+inline std::string* PeopleInfo::_internal_mutable_wechat() {
+  if (!_internal_has_wechat()) {
+    clear_other_contact();
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitDefault();
+  }
+  return _impl_.other_contact_.wechat_.Mutable(      GetArenaForAllocation());
+}
+inline std::string* PeopleInfo::release_wechat() {
+  // @@protoc_insertion_point(field_release:contacts2.PeopleInfo.wechat)
+  if (_internal_has_wechat()) {
+    clear_has_other_contact();
+    return _impl_.other_contact_.wechat_.Release();
+  } else {
+    return nullptr;
+  }
+}
+inline void PeopleInfo::set_allocated_wechat(std::string* wechat) {
+  if (has_other_contact()) {
+    clear_other_contact();
+  }
+  if (wechat != nullptr) {
+    set_has_wechat();
+    _impl_.other_contact_.wechat_.InitAllocated(wechat, GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(field_set_allocated:contacts2.PeopleInfo.wechat)
+}
+
+inline bool PeopleInfo::has_other_contact() const {
+  return other_contact_case() != OTHER_CONTACT_NOT_SET;
+}
+inline void PeopleInfo::clear_has_other_contact() {
+  _impl_._oneof_case_[0] = OTHER_CONTACT_NOT_SET;
+}
+inline PeopleInfo::OtherContactCase PeopleInfo::other_contact_case() const {
+  return PeopleInfo::OtherContactCase(_impl_._oneof_case_[0]);
+}
 // -------------------------------------------------------------------
 
 // Contacts

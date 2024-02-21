@@ -60,6 +60,29 @@ void AddPeopleInfo(contacts2::PeopleInfo *people)
     // Address => Any
     people->mutable_data()->PackFrom(addr);
 
+    std::cout << "请选择要添加的其他联系方式（1.QQ；2.wechat）:";
+    int other_contact;
+    std::cin >> other_contact;
+    std::cin.ignore(256, '\n');
+    if (1 == other_contact)
+    {
+        std::cout << "请输⼊qq号: ";
+        std::string qq;
+        std::getline(std::cin, qq);
+        people->set_qq(qq);
+    }
+    else if (2 == other_contact)
+    {
+        std::cout << "请输⼊微信号: ";
+        std::string wechat;
+        std::getline(std::cin, wechat);
+        people->set_wechat(wechat);
+    }
+    else
+    {
+        std::cout << "⾮法选择，该项设置失败！" << std::endl;
+    }
+
     std::cout << "-----------添加联系⼈成功-----------" << std::endl;
 }
 

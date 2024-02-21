@@ -20,16 +20,31 @@ void OutputContacts(contacts2::Contacts &contacts)
             std::cout << " (" << phone.PhoneType_Name(phone.type()) << ")" << std::endl;
         }
 
-        if(info.has_data() && info.data().Is<contacts2::Address>()){
+        if (info.has_data() && info.data().Is<contacts2::Address>())
+        {
             contacts2::Address addr;
             info.data().UnpackTo(&addr);
-            if(!addr.home_addr().empty()){
+            if (!addr.home_addr().empty())
+            {
                 std::cout << "联系人家庭地址：" << addr.home_addr() << std::endl;
             }
-            if(!addr.work_addr().empty()){
-                std::cout << "联系人家庭地址：" << addr.home_addr() << std::endl;
+            if (!addr.work_addr().empty())
+            {
+                std::cout << "联系人工作单位地址：" << addr.work_addr() << std::endl;
+            }
+        }
 
-            }
+        switch (info.other_contact_case())
+        {
+        case contacts2::PeopleInfo::OtherContactCase::kQq:
+            /* code */
+            std::cout << "联系人 QQ：" << info.qq() << std::endl;
+            break;
+        case contacts2::PeopleInfo::OtherContactCase::kWechat:
+            std::cout << "联系人 微信：" << info.wechat() << std::endl;
+            break;
+        default:
+            break;
         }
     }
 }
