@@ -1,0 +1,21 @@
+syntax = "proto3";
+package s_contacts;
+// 联系⼈
+message PeopleInfo {
+    reserved 2;
+    string name = 1; // 姓名
+//  int32 age = 2; // 年龄
+//  int32 birth = 2; // 年龄：错误
+    int32 birth = 4; // 出生年月
+
+
+ 
+ message Phone {
+    string number = 1; // 电话号码
+ }
+ repeated Phone phone = 3; // 电话
+}
+// 通讯录
+message Contacts {
+    repeated PeopleInfo contacts = 1;
+}
