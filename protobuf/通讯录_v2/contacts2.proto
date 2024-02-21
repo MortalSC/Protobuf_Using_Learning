@@ -1,0 +1,57 @@
+syntax = "proto3";
+package contacts2;
+
+// 引入其他文件中的 message
+// import "phone.proto";
+
+// 类似C++的类封装：电话号码类
+// message 支持嵌套
+// message Phone{
+//     string number = 1;
+// }
+
+// 引入 Any 类型
+import "google/protobuf/any.proto";
+
+// 定义地址类型
+message Address{
+    string home_addr = 1;
+    string work_addr = 2;
+}
+
+
+// 联系人信息
+message PeopleInfo{
+    string name = 1;
+    int32 age = 2;
+
+    // 使用数组存储电话号码：一个人可能多个
+
+    // 写法一：同文件内多个 message
+    // repeated string phone_numbers = 3;
+
+    // 写法二：message 嵌套使用
+    message Phone{
+        string number = 1;
+        enum PhoneType{
+            MT = 0;
+            TEL = 1;
+        }
+        PhoneType type = 2;
+    }
+    repeated Phone phone = 3;
+    google.protobuf.Any data = 4;
+    oneof other_contact{
+        string qq = 5;
+        string wechat = 6;
+    }
+
+    // 写法三：情形：类型在其他 .proto 文件
+    // import "phone.proto";【前面引入：文件信息】
+    // repeated phone.Phone phone = 3;
+}
+
+// 通讯录
+message Contacts{
+    repeated PeopleInfo people = 1;   
+}
