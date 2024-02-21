@@ -1005,3 +1005,311 @@ insert({key，value});
 // 向 map 中插入数据
 ~~~
 
+
+
+
+
+### 默认值
+
+#### 基本说明认识
+
+> 反序列化消息时，如果被反序列化的⼆进制序列中不包含某个字段，反序列化对象中相应字段时，就会设置为该字段的默认值。不同的类型对应的默认值不同：
+>
+> ---
+>
+> 
+
+| type                   | 默认值                                         |
+| ---------------------- | ---------------------------------------------- |
+| 字符串                 | 空字符串                                       |
+| 字节                   | 空字节                                         |
+| 数值类型               | 0                                              |
+| 枚举类型               | 第一个定义的枚举值（必须是0）                  |
+| 消息字段               | 未设置该字段。它的取值是依赖于语⾔。           |
+| 设置了 repeated 的字段 | 的默认值是空的（ 通常是相应语⾔的⼀个空列表 ） |
+
+
+
+#### 特别说明
+
+> 对于 消息字段 、 oneof字段 和 any字段 ，C++ 和 Java 语⾔中都有 has_ ⽅法来检测当前字段是否被设置。
+>
+> ---
+>
+> 对于标量数据类型，在 proto3 语法下，没有生成 has_ 方法！
+>
+> ---
+>
+> 举例：
+>
+> - massage 中设定 a，b，c 三个字段
+> - 使用中，只对 a，b 赋值，然后序列化
+> - 反序列化后，a，b 就是指定值，c 会有默认值。
+> - 但是，此时我们没办法确定 c 是被给定的值刚好是默认值，还是没有赋值就序列化了！
+
+
+
+
+
+### 更新消息【reserved】
+
+#### 认识更新规则
+
+> **更新消息（message）：涉及新增、修改、删除字段！**
+
+#### 更新规则：新增 / 修改
+
+> ---
+>
+> **规则：**
+>
+> - **【新增】禁⽌修改任何已有字段的字段编号**
+> - **【修改】**int32， uint32， int64， uint64 和 bool 是完全兼容的。可以从这些类型中的⼀个改为另⼀个，⽽不破坏前后兼容性。若解析出来的数值与相应的类型不匹配，会采⽤与 C++ ⼀致的处理⽅案（例如，若将 64 位整数当做 32 位进⾏读取，它将被截断为 32 位）。
+> - **【修改】**sint32 和 sint64 相互兼容但不与其他的整型兼容。
+> - 【修改】string 和 bytes 在合法 UTF-8 字节前提下也是兼容的。
+> - **【修改】**bytes 包含消息编码版本的情况下，嵌套消息与 bytes 也是兼容的。
+> - **【修改】**fixed32 与 sfixed32 兼容， fixed64 与 sfixed64兼容。
+> - **【修改】**enum 与 int32，uint32， int64 和 uint64 兼容（注意若值不匹配会被截断）。但要注意当反序列化消息时会根据语⾔采⽤不同的处理⽅案：例如，未识别的 proto3 枚举类型会被保存在消息中，但是当消息反序列化时如何表⽰是依赖于编程语⾔的。整型字段总是会保持其的值。
+> - **【修改】**oneof：
+>   - 将⼀个单独的值更改为 新 oneof 类型成员之⼀是安全和⼆进制兼容的。
+>   - 若确定没有代码⼀次性设置多个值那么将多个字段移⼊⼀个新 oneof 类型也是可⾏的。
+>   - **将任何字段移⼊已存在的 oneof 类型是不安全的。**
+
+
+
+#### 更新规则：删除
+
+> **删除问题：错误删除字段 造成的数据损坏**
+>
+> ---
+>
+> 
+
+
+
+
+
+#### 更新操作说明 / 解释
+
+~~~c++
+// 【新增】禁⽌修改任何已有字段的字段编号
+/**
+* 假设在服务端，存在 一个 age 字段，绑定的编号是 2；
+* 同时由于业务需求，不在需要 age 字段！
+* 此时的操作：注释掉 age，使用一个新的字段 birth 绑定 编号 2！！！
+* 由于业务更改只是在服务端！客服端没有变化，现在如果使用 message 进行序列化的数据，设定新字段 birth = 123456789
+* 现场如下：客户端输出现象 age => 123456789
+* 
+* 原因：protobuf 认定的是编号！根据编号绑定数据进行反序列化
+* => 因此：禁⽌修改任何已有字段的字段编号
+* => 使用建议：不注释！不删除！直接增加新字段与新序号，修改双端代码，操作新字段即可！！！
+* => 或者说：使用 reserved 关键字 保证不在使用已经被删除的或不注释掉的字段编号
+*/
+
+// 联系⼈
+message PeopleInfo {
+    reserved 2;
+    string name = 1; // 姓名
+//  int32 age = 2; // 年龄
+//  int32 birth = 2; // 年龄：错误
+    int32 birth = 4; // 年龄：错误
+    
+    message Phone {
+       string number = 1; // 电话号码
+    }
+ repeated Phone phone = 3; // 电话
+}
+
+// 图示：看 pic 文件夹！
+~~~
+
+
+
+![](.\pic\resered关键字与字段更新示例图.png)
+
+
+
+#### reserved 关键字
+
+> **用法：**
+>
+> - **reserved + 编号, 编号, ...**
+>   - **保留指定编号**
+> - **reserved + 编号x to 编号y**
+>   - **保留从 x 到 y 的所有编号**
+>
+> ---
+>
+> **作用说明：关键字指示保留给定的编号，如果使用，就会编译时报错！**
+
+
+
+
+
+### 未知字段
+
+> 如上《更新消息》中，我们更新了服务端中的 protobuf 字段，同时进行了序列化，客户端中不知道！没有同步更新，客户端反序列化后，不认识的字段（新的字段编号）就会放在未知字段。
+>
+> ---
+>
+> - 未知字段：解析结构良好的 protocol buffer 已序列化数据中的未识别字段的表⽰⽅式。例如，当旧程序解析带有新字段的数据时，这些新字段就会成为旧程序的未知字段。
+> - 本来，proto3 在解析消息时总是会丢弃未知字段，但在 3.5 版本中重新引⼊了对未知字段的保留机制。所以在 3.5 或更⾼版本中，未知字段在反序列化时会被保留，同时也会包含在序列化的结果
+>   中。
+>
+> ---
+>
+> 未知字段，在 UnkownField 类中
+
+
+
+#### 未知字段的使用认识
+
+> **UnknownFieldSet 包含在分析消息时遇到但未由其类型定义的所有字段。**
+>
+> **若要将 UnknownFieldSet 附加到任何消息，请、需要调⽤ Reflection::GetUnknownFields()。**
+>
+> 类定义在 unknown_field_set.h 中。
+
+
+
+#### UnknownFieldSet 类中的基本方法
+
+~~~c++
+clear();
+// 清除
+
+empty();
+// 判断是否有未知字段
+
+field_count();
+// 获取未知字段个数
+
+field(int idx);
+// 每个类型对象
+
+number();
+// 位置字段编号
+
+type();
+// 未知字段类型
+
+enum Type {
+	TYPE_VARINT,
+	TYPE_FIXED32,
+	TYPE_FIXED64,
+	TYPE_LENGTH_DELIMITED,
+	TYPE_GROUP
+};
+inline uint64_t varint() const;
+inline uint32_t fixed32() const;
+inline uint64_t fixed64() const;
+inline const std::string& length_delimited() const;
+inline const UnknownFieldSet& group() const;
+// 获取未知字段的值【枚举类型匹配才能使用对应方法】
+~~~
+
+
+
+
+
+#### UnknownField 类介绍
+
+> 表⽰未知字段集中的⼀个字段。
+>
+> 类定义在 unknown_field_set.h 中。
+
+
+
+#### 未知字段获取实操【重点：含步骤和方法】
+
+~~~c++
+// 1. 定义一个 Reflection 对象
+// 对象的位置：google::protobuf
+
+// 2. 使用 全局静态方法 GetReflection() 初始化 Reflection 对象。函数返回值：Reflection*
+
+// 以上步骤合并：
+using namespace goolge.protobuf;
+
+const Reflection* reflection = message::GetReflection();
+
+// 3. 使用对象获取指定 message 的未知字段
+// 调用 GetUnknownFields 函数返回值类型：UnknownFieldSet
+const GetUnknownFields& set = reflection->GetUnknownFields(message);
+
+// 4. 遍历存在的未知字段
+
+~~~
+
+
+
+
+
+### Option 选项
+
+#### 选项作用认识
+
+> **.proto ⽂件中可以声明许多选项，使⽤ option 标注。选项能影响 proto 编译器的某些处理⽅式。**
+>
+> ---
+>
+> **如使用：LITE_RUNTIME**
+>
+> - **原来没使用 选项时：生成的 message 父类是 Message**
+> - **使用选项后：父类 MessageLite**
+
+
+
+#### 选项分类
+
+> 选项的完整列表在 google/protobuf/descriptor.proto 中定义。
+>
+> 选项分为 ⽂件级、消息级、字段级 等等， 但并没有⼀种选项能作⽤于所有的类型。
+
+~~~c++
+syntax = "proto2"; // descriptor.proto 使⽤ proto2 语法版本
+message FileOptions { ... } // ⽂件选项 定义在 FileOptions 消息中
+message MessageOptions { ... } // 消息类型选项 定义在 MessageOptions 消息中
+message FieldOptions { ... } // 消息字段选项 定义在 FieldOptions 消息中
+message OneofOptions { ... } // oneof字段选项 定义在 OneofOptions 消息中
+message EnumOptions { ... } // 枚举类型选项 定义在 EnumOptions 消息中
+message EnumValueOptions { .. } // 枚举值选项 定义在 EnumValueOptions 消息中
+message ServiceOptions { ... } // 服务选项 定义在 ServiceOptions 消息中
+message MethodOptions { ... } // 服务⽅法选项 定义在 MethodOptions 消息中
+...
+~~~
+
+
+
+
+
+#### 常⽤选项列举
+
+> **optimize_for : 该选项为⽂件选项，可以设置 protoc 编译器的优化级别**，分别为 SPEED 、CODE_SIZE 、 LITE_RUNTIME 。受该选项影响，设置不同的优化级别，编译 .proto ⽂件后⽣成的代码内容不同。
+>
+> - **SPEED** : protoc 编译器将⽣成的代码是⾼度优化的，代码运⾏效率⾼，但是由此⽣成的代码编译后会占⽤更多的空间。 SPEED 是默认选项。
+> - **CODE_SIZE** : proto 编译器将⽣成最少的类，会占⽤更少的空间，是依赖基于反射的代码来实现序列化、反序列化和各种其他操作。但和 SPEED 恰恰相反，它的代码运⾏效率较低。这种⽅式适合⽤在包含⼤量的.proto⽂件，但并不盲⽬追求速度的应⽤中。
+> - **LITE_RUNTIM**E : ⽣成的代码执⾏效率⾼，同时⽣成代码编译后的所占⽤的空间也是⾮常少。这是以牺牲Protocol Buffer提供的反射功能为代价的，仅仅提供 encoding+序列化 功能，所以我们在链接 BP 库时仅需链接libprotobuf-lite，⽽⾮libprotobuf。这种模式通常⽤于资源有限的平台，例如移动⼿机平台中。
+>
+> ---
+>
+> allow_alias ： 允许将相同的常量值分配给不同的枚举常量，⽤来定义别名。该选项为枚举选项。
+
+~~~c++
+enum PhoneType {
+	option allow_alias = true;
+	MP = 0;
+	TEL = 1;
+	LANDLINE = 1; // 若不加 option allow_alias = true; 这⼀⾏会编译报错
+}
+~~~
+
+
+
+
+
+#### 自定义选项
+
+> 参考链接：https://developers.google.cn/protocol-buffers/docs/proto?hl=zh-cn#customoptions
+>
+> 大部分场景用不到。
