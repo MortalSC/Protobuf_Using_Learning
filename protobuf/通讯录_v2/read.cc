@@ -46,6 +46,16 @@ void OutputContacts(contacts2::Contacts &contacts)
         default:
             break;
         }
+
+        if (info.remark_size())
+        {
+            std::cout << "备注信息: ";
+        }
+        for (auto it = info.remark().cbegin(); it != info.remark().cend();
+             ++it)
+        {
+            std::cout << " " << it->first << ": " << it->second << std::endl;
+        }
     }
 }
 

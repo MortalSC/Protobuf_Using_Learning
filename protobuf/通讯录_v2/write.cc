@@ -55,7 +55,7 @@ void AddPeopleInfo(contacts2::PeopleInfo *people)
     std::cout << "请输入联系人的单位地址信息：";
     std::string work_addr;
     std::getline(std::cin, work_addr);
-    addr.set_home_addr(work_addr);
+    addr.set_work_addr(work_addr);
 
     // Address => Any
     people->mutable_data()->PackFrom(addr);
@@ -81,6 +81,21 @@ void AddPeopleInfo(contacts2::PeopleInfo *people)
     else
     {
         std::cout << "⾮法选择，该项设置失败！" << std::endl;
+    }
+
+    for (int i = 1;; i++)
+    {
+        std::cout << "请输⼊备注" << i << "标题 (只输⼊回⻋完成备注新增): ";
+        std::string remark_key;
+        std::getline(std::cin, remark_key);
+        if (remark_key.empty())
+        {
+            break;
+        }
+        std::cout << "请输⼊备注" << i << "内容: ";
+        std::string remark_value;
+        std::getline(std::cin, remark_value);
+        people->mutable_remark()->insert({remark_key, remark_value});
     }
 
     std::cout << "-----------添加联系⼈成功-----------" << std::endl;

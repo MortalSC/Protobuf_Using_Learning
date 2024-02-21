@@ -46,6 +46,8 @@ message PeopleInfo{
         string wechat = 6;
     }
 
+    map<string, string> remark = 7;
+
     // 写法三：情形：类型在其他 .proto 文件
     // import "phone.proto";【前面引入：文件信息】
     // repeated phone.Phone phone = 3;
