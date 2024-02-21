@@ -924,7 +924,84 @@ other_contact_case();
 
 
 
+### map 类型及其使用：通讯录v2.4【增加备注信息】
+
+#### 类型说明
+
+> 语法⽀持创建⼀个关联映射字段，也就是可以使⽤ map 类型去声明字段类型，格式为：
+> map map_field = N;
+>
+> ---
+>
+> **注意点：**
+>
+> - **key_type 是除了 float 和 bytes 类型以外的任意标量类型。 value_type 可以是任意类型**
+> - **map 字段不可以⽤ repeated 修饰**
+> - **map 中存⼊的元素是⽆序的**
 
 
 
+#### .proto 文件
+
+~~~c++
+syntax = "proto3";
+package contacts2;
+
+// 引入 Any 类型
+import "google/protobuf/any.proto";
+
+// 定义地址类型
+message Address{
+    string home_addr = 1;
+    string work_addr = 2;
+}
+
+
+// 联系人信息
+message PeopleInfo{
+    string name = 1;
+    int32 age = 2;
+    message Phone{
+        string number = 1;
+        enum PhoneType{
+            MT = 0;
+            TEL = 1;
+        }
+        PhoneType type = 2;
+    }
+    repeated Phone phone = 3;
+    google.protubuf.Any data =4;
+    oneof other_contact{
+        string qq = 5;
+        string wechat = 6;
+    }
+    map<string, string> remark = 7;
+}
+
+// 通讯录
+message Contacts{
+    repeated PeopleInfo people = 1;   
+}
+~~~
+
+
+
+#### map 类型自动关联的常用方法
+
+~~~c++
+字段名_size();
+// 获取 map 大小
+
+clear_字段名();
+// 清除 map 内容
+
+字段名();
+// 返回 map 的引用
+
+mutalbe_字段名();
+// 返回 map 的地址
+
+insert({key，value});
+// 向 map 中插入数据
+~~~
 
