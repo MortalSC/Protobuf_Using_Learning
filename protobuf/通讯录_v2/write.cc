@@ -38,13 +38,28 @@ void AddPeopleInfo(contacts2::PeopleInfo *people)
             phone->set_type(contacts2::PeopleInfo_Phone_PhoneType::PeopleInfo_Phone_PhoneType_MT);
             break;
         case 2:
-            phone -> set_type(contacts2::PeopleInfo_Phone_PhoneType::PeopleInfo_Phone_PhoneType_TEL);
+            phone->set_type(contacts2::PeopleInfo_Phone_PhoneType::PeopleInfo_Phone_PhoneType_TEL);
             break;
         default:
             std::cout << "⾮法选择，使⽤默认值！" << std::endl;
             break;
         }
     }
+
+    // Any类型的使用方式：先定义地址对象
+    contacts2::Address addr;
+    std::cout << "请输入联系人的家庭地址信息：";
+    std::string home_addr;
+    std::getline(std::cin, home_addr);
+    addr.set_home_addr(home_addr);
+    std::cout << "请输入联系人的单位地址信息：";
+    std::string work_addr;
+    std::getline(std::cin, work_addr);
+    addr.set_home_addr(work_addr);
+
+    // Address => Any
+    people->mutable_data()->PackFrom(addr);
+
     std::cout << "-----------添加联系⼈成功-----------" << std::endl;
 }
 

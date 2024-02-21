@@ -53,6 +53,7 @@ PROTOBUF_CONSTEXPR PeopleInfo::PeopleInfo(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.phone_)*/{}
   , /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.data_)*/nullptr
   , /*decltype(_impl_.age_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct PeopleInfoDefaultTypeInternal {
@@ -108,6 +109,7 @@ const uint32_t TableStruct_contacts2_2eproto::offsets[] PROTOBUF_SECTION_VARIABL
   PROTOBUF_FIELD_OFFSET(::contacts2::PeopleInfo, _impl_.name_),
   PROTOBUF_FIELD_OFFSET(::contacts2::PeopleInfo, _impl_.age_),
   PROTOBUF_FIELD_OFFSET(::contacts2::PeopleInfo, _impl_.phone_),
+  PROTOBUF_FIELD_OFFSET(::contacts2::PeopleInfo, _impl_.data_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::contacts2::Contacts, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -120,7 +122,7 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 0, -1, -1, sizeof(::contacts2::Address)},
   { 8, -1, -1, sizeof(::contacts2::PeopleInfo_Phone)},
   { 16, -1, -1, sizeof(::contacts2::PeopleInfo)},
-  { 25, -1, -1, sizeof(::contacts2::Contacts)},
+  { 26, -1, -1, sizeof(::contacts2::Contacts)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -133,20 +135,21 @@ static const ::_pb::Message* const file_default_instances[] = {
 const char descriptor_table_protodef_contacts2_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\017contacts2.proto\022\tcontacts2\032\031google/pro"
   "tobuf/any.proto\"/\n\007Address\022\021\n\thome_addr\030"
-  "\001 \001(\t\022\021\n\twork_addr\030\002 \001(\t\"\277\001\n\nPeopleInfo\022"
+  "\001 \001(\t\022\021\n\twork_addr\030\002 \001(\t\"\343\001\n\nPeopleInfo\022"
   "\014\n\004name\030\001 \001(\t\022\013\n\003age\030\002 \001(\005\022*\n\005phone\030\003 \003("
-  "\0132\033.contacts2.PeopleInfo.Phone\032j\n\005Phone\022"
-  "\016\n\006number\030\001 \001(\t\0223\n\004type\030\002 \001(\0162%.contacts"
-  "2.PeopleInfo.Phone.PhoneType\"\034\n\tPhoneTyp"
-  "e\022\006\n\002MT\020\000\022\007\n\003TEL\020\001\"1\n\010Contacts\022%\n\006people"
-  "\030\001 \003(\0132\025.contacts2.PeopleInfob\006proto3"
+  "\0132\033.contacts2.PeopleInfo.Phone\022\"\n\004data\030\004"
+  " \001(\0132\024.google.protobuf.Any\032j\n\005Phone\022\016\n\006n"
+  "umber\030\001 \001(\t\0223\n\004type\030\002 \001(\0162%.contacts2.Pe"
+  "opleInfo.Phone.PhoneType\"\034\n\tPhoneType\022\006\n"
+  "\002MT\020\000\022\007\n\003TEL\020\001\"1\n\010Contacts\022%\n\006people\030\001 \003"
+  "(\0132\025.contacts2.PeopleInfob\006proto3"
   ;
 static const ::_pbi::DescriptorTable* const descriptor_table_contacts2_2eproto_deps[1] = {
   &::descriptor_table_google_2fprotobuf_2fany_2eproto,
 };
 static ::_pbi::once_flag descriptor_table_contacts2_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_contacts2_2eproto = {
-    false, false, 357, descriptor_table_protodef_contacts2_2eproto,
+    false, false, 393, descriptor_table_protodef_contacts2_2eproto,
     "contacts2.proto",
     &descriptor_table_contacts2_2eproto_once, descriptor_table_contacts2_2eproto_deps, 1, 4,
     schemas, file_default_instances, TableStruct_contacts2_2eproto::offsets,
@@ -672,8 +675,19 @@ void PeopleInfo_Phone::InternalSwap(PeopleInfo_Phone* other) {
 
 class PeopleInfo::_Internal {
  public:
+  static const ::PROTOBUF_NAMESPACE_ID::Any& data(const PeopleInfo* msg);
 };
 
+const ::PROTOBUF_NAMESPACE_ID::Any&
+PeopleInfo::_Internal::data(const PeopleInfo* msg) {
+  return *msg->_impl_.data_;
+}
+void PeopleInfo::clear_data() {
+  if (GetArenaForAllocation() == nullptr && _impl_.data_ != nullptr) {
+    delete _impl_.data_;
+  }
+  _impl_.data_ = nullptr;
+}
 PeopleInfo::PeopleInfo(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -686,6 +700,7 @@ PeopleInfo::PeopleInfo(const PeopleInfo& from)
   new (&_impl_) Impl_{
       decltype(_impl_.phone_){from._impl_.phone_}
     , decltype(_impl_.name_){}
+    , decltype(_impl_.data_){nullptr}
     , decltype(_impl_.age_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
@@ -698,6 +713,9 @@ PeopleInfo::PeopleInfo(const PeopleInfo& from)
     _this->_impl_.name_.Set(from._internal_name(), 
       _this->GetArenaForAllocation());
   }
+  if (from._internal_has_data()) {
+    _this->_impl_.data_ = new ::PROTOBUF_NAMESPACE_ID::Any(*from._impl_.data_);
+  }
   _this->_impl_.age_ = from._impl_.age_;
   // @@protoc_insertion_point(copy_constructor:contacts2.PeopleInfo)
 }
@@ -709,6 +727,7 @@ inline void PeopleInfo::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_.phone_){arena}
     , decltype(_impl_.name_){}
+    , decltype(_impl_.data_){nullptr}
     , decltype(_impl_.age_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
@@ -731,6 +750,7 @@ inline void PeopleInfo::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.phone_.~RepeatedPtrField();
   _impl_.name_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.data_;
 }
 
 void PeopleInfo::SetCachedSize(int size) const {
@@ -745,6 +765,10 @@ void PeopleInfo::Clear() {
 
   _impl_.phone_.Clear();
   _impl_.name_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.data_ != nullptr) {
+    delete _impl_.data_;
+  }
+  _impl_.data_ = nullptr;
   _impl_.age_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
@@ -783,6 +807,14 @@ const char* PeopleInfo::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<26>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // .google.protobuf.Any data = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr = ctx->ParseMessage(_internal_mutable_data(), ptr);
+          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -839,6 +871,13 @@ uint8_t* PeopleInfo::_InternalSerialize(
         InternalWriteMessage(3, repfield, repfield.GetCachedSize(), target, stream);
   }
 
+  // .google.protobuf.Any data = 4;
+  if (this->_internal_has_data()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(4, _Internal::data(this),
+        _Internal::data(this).GetCachedSize(), target, stream);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -869,6 +908,13 @@ size_t PeopleInfo::ByteSizeLong() const {
         this->_internal_name());
   }
 
+  // .google.protobuf.Any data = 4;
+  if (this->_internal_has_data()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.data_);
+  }
+
   // int32 age = 2;
   if (this->_internal_age() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_age());
@@ -895,6 +941,10 @@ void PeopleInfo::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   _this->_impl_.phone_.MergeFrom(from._impl_.phone_);
   if (!from._internal_name().empty()) {
     _this->_internal_set_name(from._internal_name());
+  }
+  if (from._internal_has_data()) {
+    _this->_internal_mutable_data()->::PROTOBUF_NAMESPACE_ID::Any::MergeFrom(
+        from._internal_data());
   }
   if (from._internal_age() != 0) {
     _this->_internal_set_age(from._internal_age());
@@ -923,7 +973,12 @@ void PeopleInfo::InternalSwap(PeopleInfo* other) {
       &_impl_.name_, lhs_arena,
       &other->_impl_.name_, rhs_arena
   );
-  swap(_impl_.age_, other->_impl_.age_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.age_)
+      + sizeof(PeopleInfo::_impl_.age_)
+      - PROTOBUF_FIELD_OFFSET(PeopleInfo, _impl_.data_)>(
+          reinterpret_cast<char*>(&_impl_.data_),
+          reinterpret_cast<char*>(&other->_impl_.data_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata PeopleInfo::GetMetadata() const {

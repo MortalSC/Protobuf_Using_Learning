@@ -16,8 +16,20 @@ void OutputContacts(contacts2::Contacts &contacts)
         int j = 1;
         for (const contacts2::PeopleInfo_Phone &phone : info.phone())
         {
-            std::cout << "电话" << j++ << ": " << phone.number() << std::endl;
+            std::cout << "电话" << j++ << ": " << phone.number();
             std::cout << " (" << phone.PhoneType_Name(phone.type()) << ")" << std::endl;
+        }
+
+        if(info.has_data() && info.data().Is<contacts2::Address>()){
+            contacts2::Address addr;
+            info.data().UnpackTo(&addr);
+            if(!addr.home_addr().empty()){
+                std::cout << "联系人家庭地址：" << addr.home_addr() << std::endl;
+            }
+            if(!addr.work_addr().empty()){
+                std::cout << "联系人家庭地址：" << addr.home_addr() << std::endl;
+
+            }
         }
     }
 }
